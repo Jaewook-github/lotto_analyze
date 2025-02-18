@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로또 예측 시스템 - 도움말</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container my-5">
+        <!-- 네비게이션 -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">로또 예측 시스템</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">홈</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/help">도움말</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 도움말 내용 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2>분석 방법 설명</h2>
+                    </div>
+                    <div class="card-body">
+                        <h3>기본 원리</h3>
+                        <p>이 시스템은 강화학습 기반의 알고리즘을 사용하여 로또 번호를 예측합니다:</p>
+                        <ul>
+                            <li>과거 당첨 데이터 분석</li>
+                            <li>번호별 출현 빈도 가중치 계산</li>
+                            <li>학습을 통한 패턴 발견</li>
+                        </ul>
+
+                        <h3>분석 과정</h3>
+                        <ol>
+                            <li>설정한 회차만큼의 과거 데이터를 수집</li>
+                            <li>각 번호의 출현 빈도와 패턴을 분석</li>
+                            <li>학습률에 따라 가중치 조정</li>
+                            <li>설정한 반복 횟수만큼 학습 진행</li>
+                            <li>최적화된 번호 조합 도출</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2>설정 가이드</h2>
+                    </div>
+                    <div class="card-body">
+                        <h3>게임 수</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>설정 범위</th>
+                                    <td>1 ~ 50 게임</td>
+                                </tr>
+                                <tr>
+                                    <th>권장 값</th>
+                                    <td>5 ~ 10 게임</td>
+                                </tr>
+                                <tr>
+                                    <th>설명</th>
+                                    <td>생성할 번호 조합의 수입니다. 너무 많은 게임을 생성하면 분석의 정확도가 떨어질 수 있습니다.</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h3>학습 회차</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>설정 범위</th>
+                                    <td>10, 30, 50, 100, 200 회차, 전체</td>
+                                </tr>
+                                <tr>
+                                    <th>권장 값</th>
+                                    <td>50 ~ 100 회차</td>
+                                </tr>
+                                <tr>
+                                    <th>설명</th>
+                                    <td>분석에 사용할 과거 데이터의 범위입니다. 너무 적으면 패턴을 찾기 어렵고, 너무 많으면 최근 트렌드를 반영하기 어려울 수 있습니다.</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h3>학습률</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>설정 범위</th>
+                                    <td>0.001 ~ 1.0</td>
+                                </tr>
+                                <tr>
+                                    <th>권장 값</th>
+                                    <td>0.1 ~ 0.3</td>
+                                </tr>
+                                <tr>
+                                    <th>설명</th>
+                                    <td>모델이 새로운 정보를 얼마나 빠르게 받아들일지 결정합니다. 높을수록 변화가 큰 반면, 안정성이 떨어질 수 있습니다.</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h3>학습 반복</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th>설정 범위</th>
+                                    <td>10 ~ 1000</td>
+                                </tr>
+                                <tr>
+                                    <th>권장 값</th>
+                                    <td>100 ~ 300</td>
+                                </tr>
+                                <tr>
+                                    <th>설명</th>
+                                    <td>학습을 반복할 횟수입니다. 많을수록 정교한 분석이 가능하지만, 시간이 오래 걸립니다.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>최적 설정 추천</h2>
+                    </div>
+                    <div class="card-body">
+                        <h3>기본 설정</h3>
+                        <ul>
+                            <li>게임 수: 5</li>
+                            <li>학습 회차: 50</li>
+                            <li>학습률: 0.2</li>
+                            <li>학습 반복: 200</li>
+                        </ul>
+
+                        <h3>안정적인 분석을 위한 설정</h3>
+                        <ul>
+                            <li>게임 수: 3</li>
+                            <li>학습 회차: 100</li>
+                            <li>학습률: 0.1</li>
+                            <li>학습 반복: 300</li>
+                        </ul>
+
+                        <h3>빠른 분석을 위한 설정</h3>
+                        <ul>
+                            <li>게임 수: 5</li>
+                            <li>학습 회차: 30</li>
+                            <li>학습률: 0.3</li>
+                            <li>학습 반복: 100</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

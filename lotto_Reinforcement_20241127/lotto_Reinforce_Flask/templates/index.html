@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 번호 예측 시스템</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- navbar 또는 적절한 위치에 추가 -->
+    <a href="/help" class="btn btn-info">도움말</a>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #1976D2;
+            --background-color: #f5f5f7;
+            --card-background: #ffffff;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .settings-card {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .form-control, .form-select {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            padding: 0.375rem 0.75rem;
+            height: 38px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .progress {
+            height: 0.5rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 1rem;
+            transition: width 0.5s ease;
+        }
+
+        .log-container {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .prediction-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: white;
+            border-radius: 50%;
+            margin: 0 5px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
+            animation: popIn 0.5s ease forwards;
+        }
+
+        /* 번호 범위별 배경색 지정 */
+        .number-1-10 { background-color: #fbc400; }  /* 노란색: 1-10 */
+        .number-11-20 { background-color: #69c8f2; } /* 파란색: 11-20 */
+        .number-21-30 { background-color: #ff7272; } /* 빨간색: 21-30 */
+        .number-31-40 { background-color: #aaaaaa; } /* 회색: 31-40 */
+        .number-41-45 { background-color: #b0d840; } /* 녹색: 41-45 */
+
+        .predictions-container {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .graph-container {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .graph-container:hover {
+            transform: scale(1.02);
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+
+        <div class="hero-section">
+            <h1 class="display-4">로또 번호 예측 시스템</h1>
+            <p class="lead">AI 기반의 고급 분석 알고리즘으로 최적의 번호 조합을 찾아드립니다</p>
+        </div>
+
+        <div class="settings-card">
+            <h3 class="mb-4">예측 설정</h3>
+            <form id="predictionForm" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="games" class="form-label">게임 수</label>
+                    <input type="number" class="form-control" id="games" value="5" min="1" max="50">
+                </div>
+                <div class="col-md-3">
+                    <label for="learningDraws" class="form-label">학습 회차</label>
+                    <select class="form-select" id="learningDraws">
+                        <option value="전체">전체</option>
+                        <option value="10">10회차</option>
+                        <option value="30">30회차</option>
+                        <option value="50">50회차</option>
+                        <option value="100" selected>100회차</option>
+                        <option value="200">200회차</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="learningRate" class="form-label">학습률</label>
+                    <input type="number" class="form-control" id="learningRate" value="0.1" step="0.1" min="0" max="1">
+                </div>
+                <div class="col-md-3">
+                    <label for="iterations" class="form-label">학습 반복</label>
+                    <input type="number" class="form-control" id="iterations" value="100" min="1">
+                </div>
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn-predict" id="startButton">예측 시작</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="progress d-none">
+            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+        </div>
+
+        <div class="predictions-container d-none" id="predictionsContainer">
+            <h3 class="mb-4">예측된 번호</h3>
+            <div id="predictedNumbers" class="mb-4"></div>
+            <button id="downloadButton" class="btn-predict">결과 다운로드</button>
+        </div>
+
+        <div class="log-container">
+            <h3 class="mb-3">실행 로그</h3>
+            <div id="logArea"></div>
+        </div>
+
+        <div class="graph-container">
+            <h3 class="mb-3">분석 그래프</h3>
+            <div id="graphArea"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentTaskId = null;
+        let progressChecker = null;
+
+        function getNumberClass(num) {
+            if (num >= 1 && num <= 10) return 'number-1-10';
+            if (num >= 11 && num <= 20) return 'number-11-20';
+            if (num >= 21 && num <= 30) return 'number-21-30';
+            if (num >= 31 && num <= 40) return 'number-31-40';
+            if (num >= 41 && num <= 45) return 'number-41-45';
+            return '';
+        }
+
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                games: document.getElementById('games').value,
+                learning_draws: document.getElementById('learningDraws').value,
+                learning_rate: document.getElementById('learningRate').value,
+                iterations: document.getElementById('iterations').value
+            };
+
+            try {
+                const response = await fetch('/start_prediction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentTaskId = data.task_id;
+                    document.querySelector('.progress').classList.remove('d-none');
+                    startProgressCheck();
+                } else {
+                    alert(data.error || '예측 시작 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                alert('서버 연결 오류가 발생했습니다.');
+            }
+        });
+
+        function startProgressCheck() {
+            if (progressChecker) clearInterval(progressChecker);
+
+            progressChecker = setInterval(async () => {
+                if (!currentTaskId) return;
+
+                try {
+                    const response = await fetch(`/get_progress/${currentTaskId}`);
+                    const data = await response.json();
+
+                    updateProgress(data);
+
+                    if (data.status === 'completed') {
+                        clearInterval(progressChecker);
+                        showPredictions(data.predictions);
+                        updateGraphs(data.graphs);
+                    } else if (data.status === 'error') {
+                        clearInterval(progressChecker);
+                        alert(data.error || '예측 중 오류가 발생했습니다.');
+                    }
+                } catch (error) {
+                    console.error('Progress check error:', error);
+                }
+            }, 1000);
+        }
+
+        function updateProgress(data) {
+            const progressBar = document.querySelector('.progress-bar');
+            const logArea = document.getElementById('logArea');
+
+            if (data.progress) {
+                progressBar.style.width = `${data.progress}%`;
+            }
+
+            if (data.log_messages && data.log_messages.length > 0) {
+                logArea.innerHTML = data.log_messages.join('<br>');
+                logArea.scrollTop = logArea.scrollHeight;
+            }
+        }
+
+        function showPredictions(predictions) {
+            const container = document.getElementById('predictionsContainer');
+            const numbersContainer = document.getElementById('predictedNumbers');
+            container.classList.remove('d-none');
+
+            if (!predictions || !predictions.length) return;
+
+            numbersContainer.innerHTML = predictions.map((nums, idx) => `
+                <div class="mb-3">
+                    <h5>게임 ${idx + 1}</h5>
+                    <div class="numbers-row">
+                        ${nums.map((num, i) => `
+                            <span class="prediction-number ${getNumberClass(num)}"
+                                  style="animation-delay: ${i * 0.1}s">
+                                ${String(num).padStart(2, '0')}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateGraphs(graphs) {
+            const graphArea = document.getElementById('graphArea');
+            if (!graphs) return;
+
+            graphArea.innerHTML = '';
+
+            if (graphs.frequency) {
+                const frequencyContainer = document.createElement('div');
+                frequencyContainer.className = 'mb-4';
+
+                const title = document.createElement('h4');
+                title.textContent = '번호별 출현 빈도';
+                title.className = 'mb-3';
+
+                frequencyContainer.appendChild(title);
+
+                const frequencyImg = document.createElement('img');
+                frequencyImg.src = `data:image/png;base64,${graphs.frequency}`;
+                frequencyImg.className = 'img-fluid';
+                frequencyContainer.appendChild(frequencyImg);
+
+                graphArea.appendChild(frequencyContainer);
+            }
+
+            if (graphs.trend) {
+                const trendContainer = document.createElement('div');
+                trendContainer.className = 'mt-4';
+
+                const title = document.createElement('h4');
+                title.textContent = '당첨금 트렌드';
+                title.className = 'mb-3';
+
+                trendContainer.appendChild(title);
+
+                const trendImg = document.createElement('img');
+                trendImg.src = `data:image/png;base64,${graphs.trend}`;
+                trendImg.className = 'img-fluid';
+                trendContainer.appendChild(trendImg);
+
+                graphArea.appendChild(trendContainer);
+            }
+        }
+
+        document.getElementById('downloadButton').addEventListener('click', async () => {
+           if (!currentTaskId) return;
+
+           try {
+               const response = await fetch(`/download_results/${currentTaskId}`);
+               if (response.ok) {
+                   const blob = await response.blob();
+                   const url = window.URL.createObjectURL(blob);
+                   const a = document.createElement('a');
+                   a.href = url;
+                   a.download = `lotto_prediction_${currentTaskId}.xlsx`;
+                   document.body.appendChild(a);
+                   a.click();
+                   window.URL.revokeObjectURL(url);
+                   document.body.removeChild(a);
+               } else {
+                   alert('결과 다운로드 중 오류가 발생했습니다.');
+               }
+           } catch (error) {
+               alert('다운로드 중 오류가 발생했습니다.');
+           }
+       });
+   </script>
+</body>
+</html>
